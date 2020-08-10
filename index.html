@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Weather Dashboard</title>
+    
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    
+
+    
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <style>
+      html,
+body {
+  height: 100%;
+  background: url('/Users/Power/Downloads/Week 6/06-Server-Side-APIs/02-Homework/wolfgang-hasselmann-bR_-gllg7Bs-unsplash.jpg') no-repeat center fixed;    
+      background-size: cover;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#banner {
+  min-height: 90px;
+  display: flex;
+  width: 100%;
+}
+
+.days {
+  padding: 5px;
+  color: black;
+  border-radius: 10px;
+  margin: 5px;
+  text-align: center;
+}
+
+h1 {
+  color: black;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#today {
+  margin: 20px;
+  padding: 20px;
+  border-radius: 3px;
+  border: 1px solid black;
+  font-size: 14px;
+}
+
+.mainCityLabel {
+  display: flex;
+}
+
+.highUV {
+  background-color: red;
+  border-radius: 5px;
+  padding: 5px;
+  color: white;
+}
+.midUV {
+  background-color: orange;
+  border-radius: 5px;
+  padding: 5px;
+  color: white;
+}
+.lowUV {
+  background-color: green;
+  border-radius: 5px;
+  padding: 5px;
+  color: white;
+}
+
+#citySearch {
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+#search {
+  display: flex;
+  margin-left: 5px;
+}
+
+#search input {
+  border: 1px solid black;
+  margin-right: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  width: 80%;
+}
+
+#search button {
+  background-color: blue;
+  height: 40px;
+  width: 40px;
+}
+
+i {
+  color: white;
+}
+
+#quickSearch {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 5px 20px 5px;
+  background-color: white;
+}
+
+#quickSearch button {
+  padding: 20px;
+  background-color: white;
+  font-size: 15px;
+  text-align: left;
+}
+
+@media only screen and (min-width: 768px) {
+  #searchPanel {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100% - 70px);
+  }
+
+  #forecast h2,
+  #forecast .fiveDays {
+    padding: 0 20px;
+  }
+
+  #forecast .fiveDays {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #forecast .fiveDays div {
+    width: calc(20% - 20px);
+  }
+
+  #citySearch {
+    min-width: 25%;
+  }
+
+  #mainDisplay {
+    min-width: 75%;
+  }
+
+  #today,
+  #forecast {
+    min-height: 40%;
+    color: black;
+  }
+}
+
+@media only screen and (min-width: 1120px) {
+  #forecast .fiveDays div {
+    width: calc(20% - 40px);
+  }
+}
+    </style>
+  </head>
+  <body>
+    <header id="banner" class="bg-dark">
+    <!-- Just an image -->
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="#">
+    <img src="/Users/Power/Downloads/Week 6/06-Server-Side-APIs/02-Homework/Add a heading.png" width="30" height="30" alt="">
+  </a>
+</nav>
+    </header>
+
+    <div id="searchPanel">
+      <section id="citySearch">
+        <h3>Search for a City:</h3>
+        <div id="search">
+          <input
+            type="text"
+            class="border-dark"
+            id="searchText"
+            name="searchText"
+          /><button id="searchIcon" class="bg-primary border-0 rounded">
+            <i class="fa fa-search"></i>
+          </button>
+          <datalist id="searchHistory"></datalist>
+        </div>
+
+      </section>
+
+      <section id="mainDisplay">
+        <section id="today"></section>
+
+        <section id="forecast">
+          <h2>5-Day Forecast:</h2>
+          <div id="fiveDays" class="fiveDays"></div>
+        </section>
+      </section>
+    </div>
+
+    
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      var apiKey = "86c2386f7cd01320261c251552adbfb4";
+var currentURL =
+  "https://api.openweathermap.org/data/2.5/weather?appid=" +
+  apiKey +
+  "&units=imperial";
+var uvIndex = "https://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey;
+var fiveDayURL =
+  "https://api.openweathermap.org/data/2.5/forecast?appid=" +
+  apiKey +
+  "&units=imperial";
+
+let getDate = function (days) {
+  let someDate = new Date();
+  let numberOfDaysToAdd = days;
+  someDate.setDate(someDate.getDate() + numberOfDaysToAdd);
+
+  let dd = someDate.getDate();
+  let mm = someDate.getMonth() + 1;
+  let y = someDate.getFullYear();
+
+  return mm + " / " + dd + " / " + y;
+};
+
+var austin = document.getElementById("austin");
+var chicago = document.getElementById("chicago");
+var newYork = document.getElementById("newYork");
+var orlando = document.getElementById("orlando");
+var sanFran = document.getElementById("sanFran");
+var seattle = document.getElementById("seattle");
+var denver = document.getElementById("denver");
+var atlanta = document.getElementById("atlanta");
+
+var cities = JSON.parse(localStorage.getItem("cities")) || [];
+
+var searchBTN = document.getElementById("searchIcon");
+var todayContainer = document.getElementById("today");
+function displayCurrentWeather(data) {
+  $("#today").html("");
+  console.log(data);
+  let lat = data.coord.lat;
+  let lon = data.coord.lon;
+  fetch(uvIndex + `&lat=${lat}&lon=${lon}`)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      displayUV(data);
+    });
+  $("#today").append(
+    "<h2>" +
+      data.name +
+      getDate(0) +
+      `<img src="https://openweathermap.org/img/w/${data.weather[0].icon}.png">` +
+      "</h2>" +
+      "<p>Temperature: " +
+      data.main.temp +
+      " F </p>" +
+      "<p>Humidity: " +
+      data.main.humidity +
+      " % </p>" +
+      "<p>Wind Speed: " +
+      data.wind.speed +
+      " MPH </p>"
+  );
+}
+
+function displayUV(data) {
+  console.log(data);
+
+  if (data.value < 3) {
+    $("#today").append(
+      "<p>UV: <span class='lowUV'>" + data.value + "</span></p>"
+    );
+  } else if (data.value < 8) {
+    $("#today").append(
+      "<p>UV: <span class='midUV'>" + data.value + "</span></p>"
+    );
+  } else {
+    $("#today").append(
+      "<p>UV: <span class='highUV'>" + data.value + "</span></p>"
+    );
+  }
+}
+
+function displayFiveDay(data) {
+  $("#fiveDays").html("");
+  console.log(data);
+  for (let i = 0; i < 5; i++) {
+    $("#fiveDays").append(
+      "<div class='days bg-primary'>" +
+        "<h3>" +
+        getDate(i) +
+        "</h3>" +
+        `<img src="https://openweathermap.org/img/w/${data.list[i].weather[0].icon}.png">` +
+        "<p>Temperature: " +
+        data.list[i].main.temp +
+        " F </p>" +
+        "<p>Humidity: " +
+        data.list[i].main.humidity +
+        " % </p>" +
+        "</div>"
+    );
+  }
+}
+searchBTN.addEventListener("click", function weather(event) {
+  var userInput = document.getElementById("searchText").value;
+  fetch(currentURL + `&q=${userInput}`)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      displayCurrentWeather(data);
+    });
+
+  fetch(fiveDayURL + `&q=${userInput}`)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      displayFiveDay(data);
+    });
+});
+    </script>
+  </body>
+</html>
