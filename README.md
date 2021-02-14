@@ -12,6 +12,6 @@ When you search for a city you are presented with current and future conditions 
 
 
 
-# Installation
+## Installation
 
  https://mclarke9k9.github.io/MyWeatherDashboard/
